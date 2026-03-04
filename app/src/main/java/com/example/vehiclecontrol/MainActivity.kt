@@ -8,7 +8,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import com.example.vehiclecontrol.data.VehicleReceiver
+import com.example.vehiclecontrol.ui.dashboard.DashboardScreen
 import com.example.vehiclecontrol.ui.theme.VehicleControlTheme
+import com.example.vehiclecontrol.utils.VehicleEvents
+import com.example.vehiclecontrol.viewmodel.VehicleViewModel
 
 class MainActivity : ComponentActivity() {
     private val viewModel: VehicleViewModel by viewModels()

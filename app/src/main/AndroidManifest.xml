@@ -27,7 +27,7 @@
         </activity>
 
         <service
-            android:name=".MockVehicleService"
+            android:name=".data.MockVehicleService"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
