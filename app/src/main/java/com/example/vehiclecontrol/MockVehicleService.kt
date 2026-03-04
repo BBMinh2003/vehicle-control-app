@@ -4,6 +4,12 @@ import android.app.Service
 import android.content.Intent
 import android.os.IBinder
 import android.util.Log
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 class MockVehicleService : Service() {
 
@@ -22,6 +28,29 @@ class MockVehicleService : Service() {
 
         override fun setWindowStatus(windowId: Int, position: Int) {
             windowStates[windowId] = position
+        }
+    }
+
+    private val serviceScope = CoroutineScope(Dispatchers.Default + Job())
+
+    override fun onCreate() {
+        super.onCreate()
+        simulateVehicleData()
+    }
+
+    private fun simulateVehicleData() {
+        serviceScope.launch {
+            var currentSpeed = 0
+            while (isActive) {
+                delay(2000)
+                currentSpeed = (0..120).random()
+
+                val intent = Intent(VehicleEvents.ACTION_SPEED_CHANGED).apply {
+                    putExtra(VehicleEvents.EXTRA_VALUE, currentSpeed.toFloat())
+                    setPackage(packageName)
+                }
+                sendBroadcast(intent)
+            }
         }
     }
 
