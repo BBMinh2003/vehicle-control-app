@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -42,7 +44,7 @@ fun DashboardScreen(viewModel: VehicleViewModel) {
 
         HorizontalDivider(color = Color.Gray, thickness = 1.dp)
 
-        HvacControlSection()
+        HvacControlSection(viewModel)
     }
 }
 
@@ -66,33 +68,42 @@ fun SpeedometerSection(speed: Float) {
 }
 
 @Composable
-fun HvacControlSection() {
+fun HvacControlSection(viewModel: VehicleViewModel) {
+    val currentTemp by viewModel.targetTemp.collectAsStateWithLifecycle()
+
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(16.dp),
         horizontalArrangement = Arrangement.SpaceAround,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Button(
-            onClick = {
-
-            },
-            modifier = Modifier.size(100.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
-        ) {
-            Text("-", fontSize = 32.sp)
+        ControlButton(label = "-", color = Color(0xFF2196F3)) {
+            viewModel.adjustTemperature(-0.5f)
         }
 
-        Text(text = "22°C", fontSize = 40.sp, color = Color.White)
+        Text(
+            text = "${"%.1f".format(currentTemp)}°C",
+            style = MaterialTheme.typography.headlineLarge.copy(
+                fontSize = 48.sp,
+                color = Color.White,
+                fontWeight = FontWeight.ExtraBold
+            )
+        )
 
-        Button(
-            onClick = {
-
-            },
-            modifier = Modifier.size(100.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
-        ) {
-            Text("+", fontSize = 32.sp)
+        ControlButton(label = "+", color = Color(0xFFF44336)) {
+            viewModel.adjustTemperature(0.5f)
         }
+    }
+}
+
+@Composable
+fun ControlButton(label: String, color: Color, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier.size(90.dp),
+        shape = CircleShape,
+        colors = ButtonDefaults.buttonColors(containerColor = color)
+    ) {
+        Text(text = label, fontSize = 32.sp, fontWeight = FontWeight.Bold)
     }
 }
 
@@ -101,15 +112,22 @@ fun HvacControlSection() {
     device = "spec:width=1280dp,height=800dp,orientation=landscape",
     showBackground = true
 )
+
+@Preview(device = "spec:width=1280dp,height=800dp,orientation=landscape")
 @Composable
-fun PreviewDashboard() {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.Black)
-    ) {
-        SpeedometerSection(speed = 85f)
-        Spacer(modifier = Modifier.height(20.dp))
-        HvacControlSection()
+fun PreviewHMI() {
+    MaterialTheme {
+        Surface(color = Color.Black, modifier = Modifier.fillMaxSize()) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                SpeedometerSection(speed = 65f)
+                Spacer(modifier = Modifier.height(50.dp))
+                Text("HVAC Preview Mode", color = Color.Gray)
+                Row {
+                    ControlButton("-", Color.Blue) {}
+                    Text("24.0°C", fontSize = 40.sp, color = Color.White)
+                    ControlButton("+", Color.Red) {}
+                }
+            }
+        }
     }
 }

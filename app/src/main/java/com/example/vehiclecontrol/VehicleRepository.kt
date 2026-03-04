@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.os.RemoteException
+import android.util.Log
 
 class VehicleRepository(private val context: Context) {
     private var vehicleInterface: IVehicleHardwareInterface? = null
@@ -25,11 +26,11 @@ class VehicleRepository(private val context: Context) {
         context.bindService(intent, connection, Context.BIND_AUTO_CREATE)
     }
 
-    fun updateTemperature(temp: Float) {
+    fun setTemperature(temp: Float) {
         try {
             vehicleInterface?.setHvacTemperature(temp)
         } catch (e: RemoteException) {
-            e.printStackTrace()
+            Log.e("VehicleRepo", "Call AIDL error: ${e.message}")
         }
     }
 }
